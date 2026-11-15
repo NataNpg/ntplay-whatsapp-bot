@@ -92,7 +92,9 @@ export async function startWhatsApp(options: WhatsAppOptions): Promise<WhatsAppC
     socket.ev.on('connection.update', (update) => {
       if (update.qr) {
         qrcode.generate(update.qr, { small: true });
-        void QRCode.toFile(`${options.authDir}/qr.png`, update.qr);
+        QRCode.toFile(`${options.authDir}/qr.png`, update.qr).catch((error: unknown) => {
+          options.logger.debug({ error }, 'auth/qr.png em uso; QR não atualizado');
+        });
         options.logger.info('QR gerado: escaneie com o WhatsApp (também salvo em auth/qr.png)');
       }
 
